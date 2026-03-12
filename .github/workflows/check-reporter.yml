@@ -5,6 +5,9 @@ on:
     workflows: ["Manual Success Workflow"]
     types: [completed]
 
+permissions:
+  statuses: write
+
 jobs:
   report:
     runs-on: ubuntu-latest
