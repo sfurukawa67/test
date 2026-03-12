@@ -1,0 +1,34 @@
+name: Check Reporter
+
+on:
+  workflow_run:
+    workflows: ["Manual Success Workflow"]
+    types: [completed]
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check結果をPRに紐づける
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.payload.workflow_run.head_sha;
+            const conclusion = context.payload.workflow_run.conclusion;
+
+            // conclusionをGitHub Status APIのstateに変換
+            let state = 'error';
+            if (conclusion === 'success') {
+              state = 'success';
+            } else if (conclusion === 'failure') {
+              state = 'failure';
+            }
+
+            await github.rest.repos.createCommitStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: state,
+              context: 'manual-workflow-check',
+              description: `Workflow ${conclusion}`
+            });
