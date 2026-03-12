@@ -1,0 +1,26 @@
+name: Manual Success Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      result:
+        description: 'Select workflow result'
+        required: true
+        type: choice
+        options:
+          - success
+          - error
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute workflow
+        run: |
+          if [ "${{ inputs.result }}" = "success" ]; then
+            echo "Workflow completed successfully"
+            exit 0
+          else
+            echo "Workflow failed"
+            exit 1
+          fi
